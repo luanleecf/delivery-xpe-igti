@@ -58,4 +58,15 @@ router.delete('/excluirpedido/:id', async (req, res) => {
     }
 });
 
+router.get('/consultarpedido/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const pedidoConsultado = await pedidoController.consultarPedido(parseInt(id));
+        res.json(pedidoConsultado);
+    } catch (error) {
+        res.status(404).json({ erro: error.message });
+    }
+});
+
 module.exports = router;

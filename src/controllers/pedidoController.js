@@ -73,9 +73,23 @@ function excluirPedido(id) {
     return { mensagem: 'Pedido excluído com sucesso!' };
 }
 
+async function consultarPedido(id) {
+    const pedidos = await lerArquivoPedidos();
+
+    // Encontrar o pedido com o ID fornecido
+    const pedido = pedidos.pedidos.find((pedido) => pedido.id === id);
+
+    if (!pedido) {
+        throw new Error('Pedido não encontrado');
+    }
+
+    return pedido;
+}
+
 module.exports = {
     criarPedido,
     atualizarPedido,
     atualizarStatusEntrega,
     excluirPedido,
+    consultarPedido,
 };
