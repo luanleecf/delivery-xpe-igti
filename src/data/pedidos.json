@@ -1,5 +1,5 @@
 {
-  "nextId": 506,
+  "nextId": 507,
   "pedidos": [
     {
       "id": 1,
@@ -4000,6 +4000,14 @@
       "valor": 20.5,
       "entregue": true,
       "timestamp": "2023-12-03T22:13:22.957Z"
+    },
+    {
+      "id": 506,
+      "cliente": "Nome do luan lee faria",
+      "produto": "Nome do Produto",
+      "valor": 20.5,
+      "timestamp": "2023-12-03T23:12:37.489Z",
+      "entregue": true
     }
   ]
 }

@@ -1,25 +1,28 @@
 const express = require('express');
+const router = express.Router();
 const pedidoController = require('../controllers/pedidoController');
 
-const router = express.Router();
-
-router.post('/criarpedido', (req, res) => {
+router.post('/criarpedido', async (req, res) => {
     const { cliente, produto, valor } = req.body;
 
     if (!cliente || !produto || !valor) {
         return res.status(400).json({ erro: 'Os campos cliente, produto e valor são obrigatórios.' });
     }
 
-    const novoPedido = pedidoController.criarPedido(cliente, produto, valor);
-    res.status(201).json(novoPedido);
+    try {
+        const novoPedido = await pedidoController.criarPedido(cliente, produto, valor);
+        res.status(201).json(novoPedido);
+    } catch (error) {
+        res.status(500).json({ erro: 'Erro ao criar pedido' });
+    }
 });
 
-router.put('/atualizarpedido/:id', (req, res) => {
+router.put('/atualizarpedido/:id', async (req, res) => {
     const { id } = req.params;
     const { cliente, produto, valor, entregue } = req.body;
 
     try {
-        const pedidoAtualizado = pedidoController.atualizarPedido(
+        const pedidoAtualizado = await pedidoController.atualizarPedido(
             parseInt(id),
             cliente,
             produto,
@@ -32,12 +35,12 @@ router.put('/atualizarpedido/:id', (req, res) => {
     }
 });
 
-router.put('/atualizarstatusentrega/:id', (req, res) => {
+router.put('/atualizarstatusentrega/:id', async (req, res) => {
     const { id } = req.params;
     const { entregue } = req.body;
 
     try {
-        const pedidoAtualizado = pedidoController.atualizarStatusEntrega(
+        const pedidoAtualizado = await pedidoController.atualizarStatusEntrega(
             parseInt(id),
             entregue
         );
@@ -51,12 +54,13 @@ router.delete('/excluirpedido/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const resultado = pedidoController.excluirPedido(parseInt(id));
+        const resultado = await pedidoController.excluirPedido(parseInt(id));
         res.json(resultado);
     } catch (error) {
         res.status(404).json({ erro: error.message });
     }
 });
+
 
 router.get('/consultarpedido/:id', async (req, res) => {
     const { id } = req.params;

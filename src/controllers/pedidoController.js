@@ -1,20 +1,28 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 
 const pedidosFilePath = path.join(__dirname, '../', 'data', 'pedidos.json');
 
-function lerArquivoPedidos() {
-    const arquivo = fs.readFileSync(pedidosFilePath, 'utf-8');
-    return JSON.parse(arquivo);
+async function lerArquivoPedidos() {
+    try {
+        const arquivo = await fs.readFile(pedidosFilePath, 'utf-8');
+        return JSON.parse(arquivo);
+    } catch (error) {
+        throw new Error('Erro ao ler arquivo de pedidos');
+    }
 }
 
- function salvarArquivoPedidos(dados) {
-    const arquivo = JSON.stringify(dados, null, 2);
-    fs.writeFileSync(pedidosFilePath, arquivo, 'utf-8');
+async function salvarArquivoPedidos(dados) {
+    try {
+        const arquivo = JSON.stringify(dados, null, 2);
+        await fs.writeFile(pedidosFilePath, arquivo, 'utf-8');
+    } catch (error) {
+        throw new Error('Erro ao salvar arquivo de pedidos');
+    }
 }
 
- function criarPedido(cliente, produto, valor) {
-    const pedidos = lerArquivoPedidos();
+async function criarPedido(cliente, produto, valor) {
+    const pedidos = await lerArquivoPedidos();
     const novoPedido = {
         id: pedidos.nextId,
         cliente,
@@ -22,54 +30,48 @@ function lerArquivoPedidos() {
         valor,
         entregue: false,
         timestamp: new Date().toISOString(),
-     };
+    };
     pedidos.pedidos.push(novoPedido);
     pedidos.nextId++;
-    salvarArquivoPedidos(pedidos);
+    await salvarArquivoPedidos(pedidos);
     return novoPedido;
 }
 
-function atualizarPedido(id, cliente, produto, valor, entregue) {
-    const pedidos = lerArquivoPedidos();
-    // Encontrar o índice do pedido com o ID fornecido
+async function atualizarPedido(id, cliente, produto, valor, entregue) {
+    const pedidos = await lerArquivoPedidos();
     const index = pedidos.pedidos.findIndex((pedido) => pedido.id === id);
-    // Verificar se o pedido existe
+
     if (index === -1) {
         throw new Error('Pedido não encontrado');
     }
-    // Atualizar os campos fornecidos
-    pedidos.pedidos[index].cliente = cliente;
-    pedidos.pedidos[index].produto = produto;
-    pedidos.pedidos[index].valor = valor;
-    pedidos.pedidos[index].entregue = entregue;
-    pedidos.pedidos[index].timestamp = new Date().toISOString();
-    // Salvar as alterações no arquivo
-    salvarArquivoPedidos(pedidos);
-    return pedidos.pedidos[index];
+
+    const pedidoAtual = pedidos.pedidos[index];
+    pedidoAtual.cliente = cliente !== undefined ? cliente : pedidoAtual.cliente;
+    pedidoAtual.produto = produto !== undefined ? produto : pedidoAtual.produto;
+    pedidoAtual.valor = valor !== undefined ? valor : pedidoAtual.valor;
+    pedidoAtual.entregue = entregue !== undefined ? entregue : pedidoAtual.entregue;
+    pedidoAtual.timestamp = new Date().toISOString();
+
+    await salvarArquivoPedidos(pedidos);
+    return pedidoAtual;
 }
 
-function atualizarStatusEntrega(id, entregue) {
-    const pedidos = lerArquivoPedidos();
-    // Encontrar o índice do pedido com o ID fornecido
+async function atualizarStatusEntrega(id, entregue) {
+    const pedidos = await lerArquivoPedidos();
     const index = pedidos.pedidos.findIndex((pedido) => pedido.id === id);
-    // Verificar se o pedido existe
     if (index === -1) {
         throw new Error('Pedido não encontrado');
     }
-    // Atualizar somente o campo "entregue"
     pedidos.pedidos[index].entregue = entregue;
     pedidos.pedidos[index].timestamp = new Date().toISOString();
-    // Salvar as alterações no arquivo
-    salvarArquivoPedidos(pedidos);
+    await salvarArquivoPedidos(pedidos);
     return pedidos.pedidos[index];
 }
 
-function excluirPedido(id) {
-    const pedidos = lerArquivoPedidos();
-    // Filtrar os pedidos, removendo o que tem o ID fornecido
+async function excluirPedido(id) {
+    const pedidos = await lerArquivoPedidos();
     pedidos.pedidos = pedidos.pedidos.filter((pedido) => pedido.id !== id);
-    // Salvar as alterações no arquivo
-    salvarArquivoPedidos(pedidos);
+    await salvarArquivoPedidos(pedidos);
     return { mensagem: 'Pedido excluído com sucesso!' };
 }
 
