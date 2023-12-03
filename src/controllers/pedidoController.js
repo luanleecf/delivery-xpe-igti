@@ -1,28 +1,42 @@
-const mongoose = require('../config/mongoose');
+const fs = require('fs');
+const path = require('path');
 
-const Pedido = mongoose.model('Pedido', {
-    cliente: String,
-    produto: String,
-    valor: Number,
-    entregue: Boolean,
-    timestamp: String,
-});
+const pedidosFilePath = path.join(__dirname, '..', 'data', 'pedidos.json');
 
-async function criarPedido(cliente, produto, valor) {
-    const novoPedido = new Pedido({
+function lerArquivoPedidos() {
+    const arquivo = fs.readFileSync(pedidosFilePath, 'utf-8');
+    return JSON.parse(arquivo);
+}
+
+function salvarArquivoPedidos(dados) {
+    const arquivo = JSON.stringify(dados, null, 2);
+    fs.writeFileSync(pedidosFilePath, arquivo, 'utf-8');
+}
+
+function getNextId() {
+    const pedidos = lerArquivoPedidos();
+    const nextId = pedidos.nextId;
+    pedidos.nextId++;
+    salvarArquivoPedidos(pedidos);
+    return nextId;
+}
+
+function criarPedido(cliente, produto, valor) {
+    const pedidos = lerArquivoPedidos();
+
+    const novoPedido = {
+        id: getNextId(),
         cliente,
         produto,
         valor,
         entregue: false,
         timestamp: new Date().toISOString(),
-    });
+    };
 
-    try {
-        await novoPedido.save();
-        return novoPedido;
-    } catch (error) {
-        throw new Error('Erro ao criar o pedido');
-    }
+    pedidos.pedidos.push(novoPedido);
+    salvarArquivoPedidos(pedidos);
+
+    return novoPedido;
 }
 
 module.exports = {
