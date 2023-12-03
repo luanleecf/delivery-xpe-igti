@@ -1,5 +1,5 @@
 {
-  "nextId": 501,
+  "nextId": 506,
   "pedidos": [
     {
       "id": 1,
@@ -3991,8 +3991,7 @@
       "cliente": "Valéria Pádua",
       "produto": "Pizza Atum",
       "valor": 32,
-      "entregue": true,
-      "timestamp": "2021-05-02T19:48:09.767Z"
+      "timestamp": "2023-12-03T22:30:56.145Z"
     },
     {
       "id": 501,
@@ -4001,6 +4000,14 @@
       "valor": 20.5,
       "entregue": true,
       "timestamp": "2023-12-03T22:13:22.957Z"
+    },
+    {
+      "id": 505,
+      "cliente": "Nome do Cliente",
+      "produto": "Nome do Produto",
+      "valor": 20.5,
+      "entregue": false,
+      "timestamp": "2023-12-03T22:51:57.057Z"
     }
   ]
 }

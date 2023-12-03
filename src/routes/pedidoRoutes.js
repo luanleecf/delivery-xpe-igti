@@ -32,4 +32,19 @@ router.put('/atualizarpedido/:id', (req, res) => {
     }
 });
 
+router.put('/atualizarstatusentrega/:id', (req, res) => {
+    const { id } = req.params;
+    const { entregue } = req.body;
+
+    try {
+        const pedidoAtualizado = pedidoController.atualizarStatusEntrega(
+            parseInt(id),
+            entregue
+        );
+        res.json(pedidoAtualizado);
+    } catch (error) {
+        res.status(404).json({ erro: error.message });
+    }
+});
+
 module.exports = router;

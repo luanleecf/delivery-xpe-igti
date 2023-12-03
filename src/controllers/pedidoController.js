@@ -8,36 +8,27 @@ function lerArquivoPedidos() {
     return JSON.parse(arquivo);
 }
 
-function salvarArquivoPedidos(dados) {
+ function salvarArquivoPedidos(dados) {
     const arquivo = JSON.stringify(dados, null, 2);
     fs.writeFileSync(pedidosFilePath, arquivo, 'utf-8');
 }
 
-function getNextId() {
+ function criarPedido(cliente, produto, valor) {
     const pedidos = lerArquivoPedidos();
-    const nextId = pedidos.nextId;
-    pedidos.nextId++;
-    salvarArquivoPedidos(pedidos);
-    return nextId;
-}
-
-function criarPedido(cliente, produto, valor) {
-    const pedidos = lerArquivoPedidos();
-
     const novoPedido = {
-        id: getNextId(),
+        id: pedidos.nextId,
         cliente,
         produto,
         valor,
         entregue: false,
         timestamp: new Date().toISOString(),
-    };
-
+     };
     pedidos.pedidos.push(novoPedido);
+    pedidos.nextId++;
     salvarArquivoPedidos(pedidos);
-
     return novoPedido;
 }
+
 function atualizarPedido(id, cliente, produto, valor, entregue) {
     const pedidos = lerArquivoPedidos();
     // Encontrar o índice do pedido com o ID fornecido
@@ -57,7 +48,34 @@ function atualizarPedido(id, cliente, produto, valor, entregue) {
     return pedidos.pedidos[index];
 }
 
+function atualizarStatusEntrega(id, entregue) {
+    const pedidos = lerArquivoPedidos();
+    // Encontrar o índice do pedido com o ID fornecido
+    const index = pedidos.pedidos.findIndex((pedido) => pedido.id === id);
+    // Verificar se o pedido existe
+    if (index === -1) {
+        throw new Error('Pedido não encontrado');
+    }
+    // Atualizar somente o campo "entregue"
+    pedidos.pedidos[index].entregue = entregue;
+    pedidos.pedidos[index].timestamp = new Date().toISOString();
+    // Salvar as alterações no arquivo
+    salvarArquivoPedidos(pedidos);
+    return pedidos.pedidos[index];
+}
+
+function excluirPedido(id) {
+    const pedidos = lerArquivoPedidos();
+    // Filtrar os pedidos, removendo o que tem o ID fornecido
+    pedidos.pedidos = pedidos.pedidos.filter((pedido) => pedido.id !== id);
+    // Salvar as alterações no arquivo
+    salvarArquivoPedidos(pedidos);
+    return { mensagem: 'Pedido excluído com sucesso!' };
+}
+
 module.exports = {
     criarPedido,
-    atualizarPedido, // Adicionado para suportar a atualização de pedidos
+    atualizarPedido,
+    atualizarStatusEntrega,
+    excluirPedido,
 };
