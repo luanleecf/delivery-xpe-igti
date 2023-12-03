@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const pedidosFilePath = path.join(__dirname, '..', 'data', 'pedidos.json');
+const pedidosFilePath = path.join(__dirname, '../', 'data', 'pedidos.json');
 
 function lerArquivoPedidos() {
     const arquivo = fs.readFileSync(pedidosFilePath, 'utf-8');
