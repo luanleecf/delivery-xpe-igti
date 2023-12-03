@@ -47,4 +47,15 @@ router.put('/atualizarstatusentrega/:id', (req, res) => {
     }
 });
 
+router.delete('/excluirpedido/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const resultado = pedidoController.excluirPedido(parseInt(id));
+        res.json(resultado);
+    } catch (error) {
+        res.status(404).json({ erro: error.message });
+    }
+});
+
 module.exports = router;

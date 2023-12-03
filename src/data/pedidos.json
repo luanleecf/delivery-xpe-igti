@@ -4000,14 +4000,6 @@
       "valor": 20.5,
       "entregue": true,
       "timestamp": "2023-12-03T22:13:22.957Z"
-    },
-    {
-      "id": 505,
-      "cliente": "Nome do Cliente",
-      "produto": "Nome do Produto",
-      "valor": 20.5,
-      "entregue": false,
-      "timestamp": "2023-12-03T22:51:57.057Z"
     }
   ]
 }
