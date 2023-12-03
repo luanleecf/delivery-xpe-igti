@@ -40,11 +40,9 @@ async function criarPedido(cliente, produto, valor) {
 async function atualizarPedido(id, cliente, produto, valor, entregue) {
     const pedidos = await lerArquivoPedidos();
     const index = pedidos.pedidos.findIndex((pedido) => pedido.id === id);
-
     if (index === -1) {
         throw new Error('Pedido não encontrado');
     }
-
     const pedidoAtual = pedidos.pedidos[index];
     pedidoAtual.cliente = cliente !== undefined ? cliente : pedidoAtual.cliente;
     pedidoAtual.produto = produto !== undefined ? produto : pedidoAtual.produto;
@@ -77,15 +75,32 @@ async function excluirPedido(id) {
 
 async function consultarPedido(id) {
     const pedidos = await lerArquivoPedidos();
-
     // Encontrar o pedido com o ID fornecido
     const pedido = pedidos.pedidos.find((pedido) => pedido.id === id);
-
     if (!pedido) {
         throw new Error('Pedido não encontrado');
     }
-
     return pedido;
+}
+
+async function calcularTotalPedidosEntreguesPorCliente(cliente) {
+    // cliente = 'Políbio Bragança';
+    const pedidos = await lerArquivoPedidos();
+    // Filtrar os pedidos entregues para o cliente específico
+    const pedidosEntreguesCliente = pedidos.pedidos.filter(
+        (pedido) => pedido.cliente === cliente && pedido.entregue
+    );
+    // Verificar se há pedidos entregues para o cliente antes de calcular o total
+    if (pedidosEntreguesCliente.length === 0) {
+        return 0; // Não há pedidos entregues para o cliente, então o total é zero
+    }
+    // Calcular o valor total dos pedidos entregues para o cliente
+    const totalPedidosCliente = pedidosEntreguesCliente.reduce(
+        (total, pedido) => total + pedido.valor,
+        0
+    );
+    console.log(cliente + totalPedidosCliente)
+    return totalPedidosCliente;
 }
 
 module.exports = {
@@ -94,4 +109,5 @@ module.exports = {
     atualizarStatusEntrega,
     excluirPedido,
     consultarPedido,
+    calcularTotalPedidosEntreguesPorCliente,
 };

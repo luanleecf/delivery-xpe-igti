@@ -73,4 +73,16 @@ router.get('/consultarpedido/:id', async (req, res) => {
     }
 });
 
+router.get('/totalpedidos/:cliente', async (req, res) => {
+    const { cliente } = req.params;
+    try {
+        const totalPedidosCliente = await pedidoController.calcularTotalPedidosEntreguesPorCliente(
+            cliente
+        );
+        res.json({ cliente, totalPedidosCliente });
+    } catch (error) {
+        res.status(500).json({ erro: 'Erro ao calcular total de pedidos entregues por cliente' });
+    }
+});
+
 module.exports = router;
