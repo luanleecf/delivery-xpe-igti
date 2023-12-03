@@ -14,4 +14,22 @@ router.post('/criarpedido', (req, res) => {
     res.status(201).json(novoPedido);
 });
 
+router.put('/atualizarpedido/:id', (req, res) => {
+    const { id } = req.params;
+    const { cliente, produto, valor, entregue } = req.body;
+
+    try {
+        const pedidoAtualizado = pedidoController.atualizarPedido(
+            parseInt(id),
+            cliente,
+            produto,
+            parseFloat(valor),
+            entregue
+        );
+        res.json(pedidoAtualizado);
+    } catch (error) {
+        res.status(404).json({ erro: error.message });
+    }
+});
+
 module.exports = router;
