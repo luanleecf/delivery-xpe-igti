@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pedidoController = require('../controllers/pedidoController');
 
-router.post('/criarpedido', async (req, res) => {
+router.post('/criarpedido', (req, res) => {
     const { cliente, produto, valor } = req.body;
 
     if (!cliente || !produto || !valor) {
@@ -10,19 +10,19 @@ router.post('/criarpedido', async (req, res) => {
     }
 
     try {
-        const novoPedido = await pedidoController.criarPedido(cliente, produto, valor);
+        const novoPedido = pedidoController.criarPedido(cliente, produto, valor);
         res.status(201).json(novoPedido);
     } catch (error) {
         res.status(500).json({ erro: 'Erro ao criar pedido' });
     }
 });
 
-router.put('/atualizarpedido/:id', async (req, res) => {
+router.put('/atualizarpedido/:id', (req, res) => {
     const { id } = req.params;
     const { cliente, produto, valor, entregue } = req.body;
 
     try {
-        const pedidoAtualizado = await pedidoController.atualizarPedido(
+        const pedidoAtualizado = pedidoController.atualizarPedido(
             parseInt(id),
             cliente,
             produto,
@@ -35,12 +35,12 @@ router.put('/atualizarpedido/:id', async (req, res) => {
     }
 });
 
-router.put('/atualizarstatusentrega/:id', async (req, res) => {
+router.put('/atualizarstatusentrega/:id', (req, res) => {
     const { id } = req.params;
     const { entregue } = req.body;
 
     try {
-        const pedidoAtualizado = await pedidoController.atualizarStatusEntrega(
+        const pedidoAtualizado = pedidoController.atualizarStatusEntrega(
             parseInt(id),
             entregue
         );
@@ -50,38 +50,54 @@ router.put('/atualizarstatusentrega/:id', async (req, res) => {
     }
 });
 
-router.delete('/excluirpedido/:id', async (req, res) => {
+router.delete('/excluirpedido/:id', (req, res) => {
     const { id } = req.params;
-
     try {
-        const resultado = await pedidoController.excluirPedido(parseInt(id));
+        const resultado = pedidoController.excluirPedido(parseInt(id));
         res.json(resultado);
     } catch (error) {
         res.status(404).json({ erro: error.message });
     }
 });
 
-
-router.get('/consultarpedido/:id', async (req, res) => {
+router.get('/consultarpedido/:id', (req, res) => {
     const { id } = req.params;
-
     try {
-        const pedidoConsultado = await pedidoController.consultarPedido(parseInt(id));
+        const pedidoConsultado = pedidoController.consultarPedido(parseInt(id));
         res.json(pedidoConsultado);
     } catch (error) {
         res.status(404).json({ erro: error.message });
     }
 });
 
-router.get('/totalpedidos/:cliente', async (req, res) => {
+router.get('/totalpedidos/:cliente', (req, res) => {
     const { cliente } = req.params;
     try {
-        const totalPedidosCliente = await pedidoController.calcularTotalPedidosEntreguesPorCliente(
+        const totalPedidosCliente = pedidoController.calcularTotalPedidosEntreguesPorCliente(
             cliente
         );
         res.json({ cliente, totalPedidosCliente });
     } catch (error) {
         res.status(500).json({ erro: 'Erro ao calcular total de pedidos entregues por cliente' });
+    }
+});
+
+router.get('/totalpedidosporproduto/:produto', (req, res) => {
+    const { produto } = req.params;
+    try {
+        const totalPedidos = pedidoController.calcularTotalPedidosEntreguesPorProduto(produto);
+        res.json({ produto, totalPedidos });
+    } catch (error) {
+        res.status(500).json({ erro: 'Erro ao calcular total de pedidos entregues por produto' });
+    }
+});
+
+router.get('/produtosmaisvendidos', (req, res) => {
+    try {
+        const produtosMaisVendidos = pedidoController.calcularProdutosMaisVendidos();
+        res.json(produtosMaisVendidos);
+    } catch (error) {
+        res.status(500).json({ erro: 'Erro ao calcular produtos mais vendidos' });
     }
 });
 
