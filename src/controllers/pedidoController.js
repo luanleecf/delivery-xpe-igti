@@ -151,7 +151,8 @@ function calcularProdutosMaisVendidos() {
         }
     });
     const produtosMaisVendidos = Object.entries(quantidadePorProduto)
-        .sort((a, b) => b[1] - a[1])
+        // sort((a, b) => a[1] - b[1]) caso queira em ordem crescente
+        .sort((a, b) => b[1] - a[1]) //em ordem descrecente
         .map(([produto, quantidade]) => `${produto} - ${quantidade}`);
     return produtosMaisVendidos;
 }
